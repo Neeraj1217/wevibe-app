@@ -5,20 +5,30 @@
 //  - Keeps full visual structure identical
 // =====================================================
 
+// 1️⃣ LOAD ENV FIRST — ESM SAFE (THIS IS CRITICAL)
+// 1️⃣ LOAD ENV FIRST (ESM SAFE)
+// 🔥 FORCE dotenv to load backend/.env (no guessing, no auto-discovery)
+// ✅ Load environment variables FIRST (ESM-safe, production-ready)
+import "dotenv/config";
+
+// Core imports
 import express from "express";
 import cors from "cors";
 import youtubedl from "yt-dlp-exec";
-import dotenv from "dotenv";
 import fetch from "node-fetch";
 import cookieParser from "cookie-parser";
 import querystring from "querystring";
+
+// App imports
 import connectDB from "./config/db.js";
 import Song from "./models/songModel.js";
 import Playlist from "./models/playlistModel.js";
 import authRoutes from "./routes/authRoutes.js";
+import { verifyToken } from "./middleware/verifyToken.js";
 
-dotenv.config();
+// Initialize DB
 connectDB();
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -316,15 +326,16 @@ app.get("/api/playlists", async (req, res) => {
   }
 });
 
-app.post("/api/playlists", async (req, res) => {
+app.post("/api/playlists", verifyToken, async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: "Playlist name required" });
     const newPlaylist = await Playlist.create({
-      name,
-      coverArt: "https://via.placeholder.com/300x300?text=Playlist",
-      songs: [],
-    });
+  name,
+  coverArt: "https://via.placeholder.com/300x300?text=Playlist",
+  songs: [],
+  userId: req.user.uid,
+});
     res.status(201).json(newPlaylist);
   } catch {
     res.status(500).json({ error: "Failed to create playlist" });
@@ -377,15 +388,26 @@ await playlist.save();
 // =====================================================
 // 🗑️ Delete Playlist
 // =====================================================
-app.delete("/api/playlists/:id", async (req, res) => {
+app.delete("/api/playlists/:id", verifyToken, async (req, res) => {
   try {
-    const deleted = await Playlist.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ error: "Playlist not found" });
+    const playlist = await Playlist.findById(req.params.id);
+
+    if (!playlist) {
+      return res.status(404).json({ error: "Playlist not found" });
+    }
+
+    if (playlist.userId !== req.user.uid) {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
+    await playlist.deleteOne();
     res.json({ message: "Playlist deleted" });
-  } catch {
+  } catch (err) {
+    console.error("❌ Delete playlist error:", err);
     res.status(500).json({ error: "Failed to delete playlist" });
   }
 });
+
 
 // =====================================================
 // 🎶 Import Playlist from Spotify (YouTube Synced)

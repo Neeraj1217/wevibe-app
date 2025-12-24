@@ -18,3 +18,13 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+# Firebase Admin SDK
+firebase-adminsdk.json
+firebase-adminsdk*.json
+# Backend specific
+backend/node_modules/
+backend/.env
+
+# Firebase backend files (temporary auth)
+backend/config/firebaseAdmin.js
+backend/middleware/verifyToken.js
