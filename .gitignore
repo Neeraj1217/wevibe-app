@@ -26,5 +26,3 @@ backend/node_modules/
 backend/.env
 
 # Firebase backend files (temporary auth)
-backend/config/firebaseAdmin.js
-backend/middleware/verifyToken.js
