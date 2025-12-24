@@ -1,0 +1,973 @@
+/* 🎧 WeVibe v6 — Premium Spotify-Style Interface */
+
+/* -------------------------------------------------------------------
+   Original file (preserved)
+   ------------------------------------------------------------------- */
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top left, #141019, #09080c);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+}
+
+/* ========== GLOBAL ELEMENTS ========== */
+button {
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.gradient {
+  background: linear-gradient(90deg, #ff0077, #ff66c4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ========== APP STRUCTURE ========== */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: radial-gradient(circle at top left, #141019, #0a090d);
+}
+
+/* Header */
+.header {
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 0 20px rgba(255, 0, 119, 0.5);
+}
+
+/* Search Bar */
+.searchBar {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.searchBar input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+}
+
+.searchBar input:focus {
+  outline: 2px solid #ff0077;
+  box-shadow: 0 0 10px #ff0077;
+}
+
+.searchBar button {
+  background: linear-gradient(90deg, #ff0077, #ff66c4);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+}
+
+/* ========== MAIN LAYOUT ========== */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+  gap: 1rem;
+}
+
+.spotifyStyle {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Sidebar */
+.sidebarNav {
+  width: 230px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  backdrop-filter: blur(20px);
+}
+
+.navItem {
+  color: #ccc;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.navItem.active {
+  background: linear-gradient(90deg, #ff0077, #ff66c4);
+  box-shadow: 0 0 8px rgba(255, 0, 119, 0.3);
+  color: white;
+}
+
+/* ========== CONTENT AREA ========== */
+.contentArea {
+  flex: 1;
+  background: linear-gradient(180deg, #181818 0%, #0f0f0f 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  position: relative;
+  z-index: 0;
+}
+
+.contentArea::-webkit-scrollbar {
+  width: 8px;
+}
+.contentArea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.homeSection h2 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(255, 0, 119, 0.3);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.4rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ======= MUSIC CARD ======= */
+.musicCard {
+  background: #181818;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.25s ease, filter 0.25s ease, opacity 0.25s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: visible;
+  z-index: 2;
+}
+
+.musicCard.active {
+  transform: scale(1.02);
+  z-index: 10002;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.musicCard:hover {
+  transform: scale(1.03);
+  background: #202020;
+  box-shadow: 0 0 15px rgba(255, 0, 119, 0.25);
+}
+
+.cardImageWrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cardImage {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 0, 119, 0.25);
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.musicCard:hover .cardImage {
+  transform: scale(1.05);
+}
+
+.playOverlay {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ff0077, #ff66c4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(255, 0, 119, 0.4);
+}
+
+.musicCard:hover .playOverlay {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ======= BUTTONS ======= */
+.createPlaylistBtn {
+  background: rgba(255, 0, 119, 0.2);
+  border: 1px solid rgba(255, 0, 119, 0.4);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px rgba(255, 0, 119, 0.25);
+  transition: all 0.25s ease;
+}
+
+.createPlaylistBtn:hover {
+  background: linear-gradient(90deg, #ff0077, #ff66c4);
+  border-color: transparent;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 0, 119, 0.5);
+}
+
+/* ========== BOTTOM PLAYER ========== */
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 15, 0.97);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  box-sizing: border-box;
+  z-index: 100;
+}
+
+.barLeft,
+.barCenter,
+.barRight {
+  display: flex;
+  align-items: center;
+}
+
+.barLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.barCenter {
+  flex: 1;
+  justify-content: center;
+  gap: 20px;
+}
+
+.barRight {
+  flex: 1;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.volumeSlider {
+  width: 70px;
+}
+
+.progressBar {
+  flex: 1;
+  max-width: 150px;
+}
+
+.volumeSlider,
+.progressBar {
+  accent-color: #ff66c4;
+  cursor: pointer;
+}
+
+/* --- Song Options Dropdown --- */
+.songMenu {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: rgba(20, 20, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  padding: 6px 0;
+  width: 180px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  z-index: 10003;
+  transform-origin: top right;
+  animation: fadeInMenu 0.2s ease forwards;
+
+  /* 🎯 GLITCH FIX — GPU isolation so player repaint doesn’t shake menu */
+  will-change: transform;
+  transform: translateZ(2500px) !important;
+}
+
+.menuItem {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: #ddd;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 10004;
+}
+
+.menuItem:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 119, 0.25),
+    rgba(255, 102, 196, 0.25)
+  );
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 102, 196, 0.5);
+  transform: scale(1.02);
+}
+
+.songMenu > div > div {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background: rgba(25, 25, 30, 0.98);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 0;
+  width: 180px;
+  z-index: 10005;
+  box-shadow: 0 8px 25px rgba(255, 0, 119, 0.25);
+  animation: slideInRight 0.2s ease forwards;
+}
+
+@keyframes fadeInMenu {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ICON BUTTON STYLE */
+.iconBtn {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  border-radius: 8px;
+  padding: 6px;
+  transition: all 0.25s ease;
+  z-index: 3;
+}
+
+.iconBtn:hover {
+  color: #fff;
+  background: rgba(255, 0, 119, 0.15);
+  box-shadow: 0 0 10px rgba(255, 0, 119, 0.25);
+  transform: scale(1.1);
+}
+
+/* ========== MENU-BLUR EFFECT ========== */
+.contentArea.menu-open .musicCard {
+  filter: blur(4px) saturate(0.7);
+  opacity: 0.5;
+  transition: filter 0.25s ease, opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.contentArea.menu-open .musicCard.active {
+  filter: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.songMenu {
+  pointer-events: auto;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .spotifyStyle {
+    flex-direction: column;
+  }
+
+  .sidebarNav {
+    display: none;
+  }
+
+  .bottomBar {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .barLeft,
+  .barCenter,
+  .barRight {
+    flex: unset;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .progressBar {
+    max-width: 90%;
+  }
+
+  .volumeSlider {
+    width: 60%;
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* =========================
+   OVERLAY + MENU PORTAL FIX
+   ========================= */
+
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  display: block;
+  pointer-events: auto;
+}
+
+.menuOverlay .songMenu {
+  position: absolute !important;
+  z-index: 10000000 !important;
+  background: rgba(20, 20, 25, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+  padding: 6px 0;
+  width: 220px;
+  transform: translateZ(9999px);
+  animation: fadeInUp 0.18s ease-out forwards;
+}
+
+.playlistSubmenu {
+  min-width: 180px;
+  background: rgba(20, 20, 25, 0.98);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.7);
+  padding: 4px 0;
+  z-index: 10000001;
+}
+
+.menuOverlay .menuItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bottomBar {
+  z-index: 5000;
+}
+
+.menuOverlay,
+.menuOverlay .songMenu,
+.menuOverlay .menuItem,
+.menuOverlay .playlistSubmenu {
+  pointer-events: auto;
+}
+
+.menuOverlay .songMenu {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* ===== CREATE PLAYLIST MODAL ===== */
+.createModal {
+  background: rgba(20, 20, 25, 0.96);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+  justify-content: center;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  color: #fff;
+  animation: fadeInUp 0.25s ease forwards;
+}
+
+.createModal h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  background: linear-gradient(90deg, #ff0077, #ff66c4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.createModal input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+}
+
+.createModal input:focus {
+  outline: none;
+  border-color: #ff0077;
+  box-shadow: 0 0 8px rgba(255, 0, 119, 0.4);
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.cancelBtn,
+.confirmBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.cancelBtn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
+
+.cancelBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.confirmBtn {
+  background: linear-gradient(90deg, #ff0077, #ff66c4);
+  color: white;
+  box-shadow: 0 0 12px rgba(255, 0, 119, 0.4);
+}
+
+.confirmBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px rgba(255, 0, 119, 0.6);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeInOverlay 0.25s ease forwards;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ——————————— USER INFO CHIP ——————————— */
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  border-radius: 30px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 12px rgba(255, 0, 150, 0.3);
+  transition: all 0.3s ease;
+  margin-left: auto;
+}
+
+.userInfo:hover {
+  background: rgba(255, 85, 200, 0.1);
+  box-shadow: 0 0 18px rgba(255, 0, 150, 0.4);
+}
+
+.userPhone {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.logoutChip {
+  background: linear-gradient(90deg, #ff0077, #ff55c7);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 85, 200, 0.4);
+}
+
+.logoutChip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(255, 85, 200, 0.6);
+}
+
+/* ——————————— BOTTOM BAR ART FIX ——————————— */
+
+.barCover {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 0, 119, 0.3);
+  background-color: #000;
+  flex-shrink: 0;
+}
+
+.barInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 12px;
+  max-width: 180px;
+  overflow: hidden;
+}
+
+.barInfo h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barInfo p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #aaa;
+  opacity: 0.8;
+}
+
+/* ——————————— PLAY OVERLAY ——————————— */
+
+.overlayBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 8px rgba(255, 0, 128, 0.2);
+  color: #fff;
+}
+
+.loadBtn {
+  background: linear-gradient(90deg, #a600ff, #ff00aa);
+  box-shadow: 0 0 10px rgba(255, 0, 128, 0.4);
+}
+
+.loadBtn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 15px rgba(255, 0, 170, 0.7);
+}
+
+.playBtn {
+  background: linear-gradient(135deg, #ff008c, #ff4eb8);
+  color: #fff;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.playBtn:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 25px rgba(255, 0, 200, 0.8);
+}
+
+.loadingIndicator {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ff8cd1;
+  border: 1px solid rgba(255, 100, 200, 0.3);
+  border-radius: 50px;
+  padding: 8px 16px;
+  animation: pulseLoad 1.4s infinite ease-in-out;
+}
+
+@keyframes pulseLoad {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: opacity 0.3s ease;
+}
+
+.cardImageWrapper:hover .playOverlay {
+  opacity: 1;
+}
+
+.fullClickArea {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  background: transparent;
+}
+
+/* ——————————— QUEUE PANEL ——————————— */
+
+.queuePanel {
+  background: rgba(20,20,25,0.98);
+  border-radius: 12px;
+  padding: 12px;
+  width: 340px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.65);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.queueItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 10px;
+  transition: background 0.18s ease, transform 0.15s ease;
+}
+
+.queueItem:hover {
+  background: rgba(255,255,255,0.02);
+  transform: translateY(-2px);
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translateY(-6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 10000002;
+}
+
+.tooltip.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.muted {
+  color: rgba(255,255,255,0.45);
+}
+
+.high-contrast .musicCard {
+  background: #0a0a0a;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.8);
+}
+
+.high-contrast .iconBtn {
+  color: #fff;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playlist-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.musicCard.compact {
+  padding: 8px;
+}
+
+.menuOverlay {
+  z-index: 2147483000;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(8px)) or (backdrop-filter: blur(8px))) {
+  .header,
+  .sidebarNav,
+  .createModal {
+    background-color: rgba(10,10,12,0.85);
+  }
+}
+
+/* padding block (unchanged) */
+
+ /* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+/* =================================================================== */
+
