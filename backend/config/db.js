@@ -1,14 +1,41 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
+
+function resolveMongoUri() {
+  const rawUri = process.env.MONGODB_URI;
+  const rawPassword = process.env.MONGODB_PASSWORD;
+
+  if (!rawUri) {
+    throw new Error("MONGODB_URI is not set");
+  }
+
+  if (
+    rawUri.includes("DB_PASSWORD_HERE") ||
+    rawUri.includes("${MONGODB_PASSWORD}")
+  ) {
+    if (!rawPassword) {
+      throw new Error(
+        "MONGODB_PASSWORD is required when MONGODB_URI contains a password placeholder"
+      );
+    }
+
+    const encodedPassword = encodeURIComponent(rawPassword);
+    return rawUri
+      .replaceAll("DB_PASSWORD_HERE", encodedPassword)
+      .replaceAll("${MONGODB_PASSWORD}", encodedPassword);
+  }
+
+  return rawUri;
+}
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ MongoDB Connected");
+    const mongoUri = resolveMongoUri();
+    await mongoose.connect(mongoUri);
+    console.log("MongoDB connected");
   } catch (err) {
-    console.error("❌ Database connection failed:", err.message);
-    process.exit(1);
+    console.error("MongoDB connection failed");
+    console.error(`Reason: ${err.message}`);
+    throw err;
   }
 };
 

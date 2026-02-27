@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./HomePage.css";
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_API_BASE || "https://hvlqjvl7-5000.inc1.devtunnels.ms/";
 
 function HomePage() {
   const [playlists, setPlaylists] = useState([]);
@@ -12,7 +12,7 @@ function HomePage() {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const res = await axios.get(`${API}/api/home`);
+        const res = await axios.get(`${API_BASE}/api/home`);
         setPlaylists(res.data.playlists);
         setSuggestions(res.data.suggestions);
         setRecent(res.data.recent);

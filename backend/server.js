@@ -26,9 +26,6 @@ import Playlist from "./models/playlistModel.js";
 import authRoutes from "./routes/authRoutes.js";
 import { verifyToken } from "./middleware/verifyToken.js";
 
-// Initialize DB
-connectDB();
-
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -91,6 +88,9 @@ app.use(cookieParser());
 // 🔐 Auth Routes
 // =====================================================
 app.use("/api/auth", authRoutes);
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // =====================================================
 // 🔍 YouTube Search Helper
@@ -517,9 +517,19 @@ app.post("/api/playlists/:id/remove", async (req, res) => {
     res.status(500).json({ error: "Failed to remove song" });
   }
 });
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🎧 WeVibe backend running at http://127.0.0.1:${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectDB();
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Server startup failed due to database connection error.");
+    process.exit(1);
+  }
+}
+
+startServer();
 
 // =====================================================
 // Utility
@@ -527,3 +537,4 @@ app.listen(PORT, "0.0.0.0", () => {
 function escapeRegExp(string) {
   return String(string).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
