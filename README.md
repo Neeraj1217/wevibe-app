@@ -155,6 +155,11 @@ Add screenshots here before final submission:
 - Now playing / queue UI
 - Auth flow (phone OTP)
 
+- <img width="1918" height="912" alt="image" src="https://github.com/user-attachments/assets/bff9fccf-7744-4c4d-9985-a774ae21f070" />
+<img width="1918" height="912" alt="image" src="https://github.com/user-attachments/assets/274c7244-f239-41c5-a8bc-eb256ec9d86a" />
+<img width="1918" height="911" alt="image" src="https://github.com/user-attachments/assets/e7b43d6c-6865-4b4b-825e-65b9f6f26ccb" />
+
+
 ## Future Improvements
 
 - Add automated tests for backend routes and critical frontend flows
