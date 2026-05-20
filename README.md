@@ -1,155 +1,172 @@
-# WeVibe
+# WeVibe App
 
-Full-stack music web app: YouTube search/playback, playlists, Spotify import, and Firebase phone authentication.
+WeVibe is a full-stack music web application for searching songs, streaming YouTube audio, creating playlists, and importing Spotify playlists into a playable queue.
+
+This repository is structured and documented for portfolio use and CS50 final project submission.
+
+## Features
+
+- Search songs via YouTube Data API
+- Stream audio from YouTube sources using `yt-dlp`
+- Create, view, and manage playlists
+- Import Spotify playlists and map tracks to playable YouTube results
+- Firebase phone authentication in the frontend
+- Protected playlist create/delete routes on the backend
 
 ## Tech Stack
 
-- **Frontend:** React, Axios, Firebase Auth
-- **Backend:** Node.js, Express, Mongoose
-- **Database:** MongoDB (local dev) / MongoDB Atlas (production)
-- **Media:** YouTube Data API, yt-dlp
+- Frontend: React, Axios, Firebase Auth
+- Backend: Node.js, Express, Mongoose
+- Database: MongoDB (local or Atlas)
+- External APIs: YouTube Data API, Spotify API, Firebase Admin
 
-## Project Structure
+## Architecture Overview
 
-```text
-wevibe/
-├── backend/          # Express API
-├── frontend/         # React app
-└── README.md
+- `frontend`: Single-page React client for search, playback UI, queue handling, and Firebase phone auth.
+- `backend`: Express REST API for search/audio resolution, playlist CRUD, Spotify import, and auth-protected actions.
+- `database`: MongoDB stores users, playlists, and song metadata/cache references.
+- `auth model`: Frontend signs users in with Firebase OTP and sends Bearer tokens to backend-protected routes.
+
+## Installation
+
+### 1) Clone and install dependencies
+
+```powershell
+git clone https://github.com/Neeraj1217/wevibe-app.git
+cd wevibe-app
+
+cd backend
+npm install
+
+cd ..\frontend
+npm install
 ```
 
-## Prerequisites
-
-- Node.js 18+
-- MongoDB running locally (dev) or MongoDB Atlas URI (production)
-- Firebase project with Phone Auth enabled
-- YouTube Data API key
-- Firebase Admin service account JSON (backend only, never commit)
-
-## Local Development
-
-### 1. Environment files
+### 2) Configure environment variables
 
 ```powershell
 copy backend\.env.example backend\.env
 copy frontend\.env.example frontend\.env
 ```
 
-Edit `backend/.env`:
+Then update values in both `.env` files.
 
-```env
-MONGODB_URI=mongodb://127.0.0.1:27017/wevibe
-YT_API_KEY=your_youtube_api_key
-FRONTEND_URL=http://localhost:3000
-FIREBASE_ADMIN_KEY_PATH=./firebase-adminsdk.json
-```
+### 3) Add Firebase Admin credentials (backend)
 
-Place your Firebase Admin SDK JSON at `backend/firebase-adminsdk.json` (gitignored).
+Place your Firebase service account JSON at:
 
-Edit `frontend/.env` with Firebase client config from Firebase Console → Project settings.
+- `backend/firebase-adminsdk.json`
 
-### 2. Install and run
-
-```powershell
-cd backend
-npm install
-npm run dev
-
-# new terminal
-cd frontend
-npm install
-npm start
-```
-
-- Frontend: http://localhost:3000
-- Backend: http://localhost:5000
-- Health: http://localhost:5000/health
-
-### 3. Verify
-
-- `GET /health` → `{ "ok": true, "dbConnected": true }` when MongoDB is up
-- Logged-in users can create playlists (`POST /api/playlists` requires Firebase Bearer token)
-- If MongoDB is down, the server still starts; DB routes return `503`
+Or set `FIREBASE_SERVICE_ACCOUNT_JSON` in `backend/.env`.
 
 ## Environment Variables
 
 ### Backend (`backend/.env`)
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `PORT` | No | Default `5000` |
-| `NODE_ENV` | No | `development` or `production` |
-| `MONGODB_URI` | Yes | `mongodb://127.0.0.1:27017/wevibe` (local) or Atlas `mongodb+srv://...` |
-| `YT_API_KEY` | Yes | YouTube Data API key |
-| `FRONTEND_URL` | Yes | CORS origin(s), comma-separated |
-| `FIREBASE_ADMIN_KEY_PATH` | Yes* | Path to service account JSON |
-| `FIREBASE_SERVICE_ACCOUNT_JSON` | Alt | Raw JSON string (cloud hosts) |
-| `SPOTIFY_CLIENT_ID` | For import | Spotify API |
-| `SPOTIFY_CLIENT_SECRET` | For import | Spotify API |
-
-\* Or set `FIREBASE_SERVICE_ACCOUNT_JSON` instead of a file path.
+- `PORT` (optional, default: `5000`)
+- `NODE_ENV` (optional, default: `development`)
+- `MONGODB_URI` (required)
+- `YT_API_KEY` (required for search/audio resolution)
+- `FRONTEND_URL` (required for CORS; comma-separated allowed origins)
+- `FIREBASE_ADMIN_KEY_PATH` or `FIREBASE_SERVICE_ACCOUNT_JSON` (required for Firebase token verification)
+- `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` (required for Spotify import)
+- `JWT_SECRET` (required in production for backend auth routes under `/api/auth`)
 
 ### Frontend (`frontend/.env`)
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `REACT_APP_API_BASE` | Yes | Backend URL, e.g. `http://localhost:5000` |
-| `REACT_APP_FIREBASE_*` | Yes | Firebase web app config (6 keys) |
+- `REACT_APP_API_BASE`
+- `REACT_APP_FIREBASE_API_KEY`
+- `REACT_APP_FIREBASE_AUTH_DOMAIN`
+- `REACT_APP_FIREBASE_PROJECT_ID`
+- `REACT_APP_FIREBASE_STORAGE_BUCKET`
+- `REACT_APP_FIREBASE_MESSAGING_SENDER_ID`
+- `REACT_APP_FIREBASE_APP_ID`
 
-## Production Deployment
+## Run Locally
 
-Set environment variables on your host (Render, Railway, Fly.io, VPS, etc.). **Do not commit `.env` or `firebase-adminsdk.json`.**
+Start backend:
 
-### Backend
-
-```env
-NODE_ENV=production
-PORT=5000
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/wevibe?retryWrites=true&w=majority
-YT_API_KEY=...
-FRONTEND_URL=https://your-frontend-domain.com
-FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
+```powershell
+cd backend
+npm run dev
 ```
 
-Or mount `firebase-adminsdk.json` and set `FIREBASE_ADMIN_KEY_PATH`.
-
-### Frontend
-
-Build with production API URL and Firebase config:
+Start frontend in a second terminal:
 
 ```powershell
 cd frontend
-# set REACT_APP_API_BASE=https://api.yourdomain.com and REACT_APP_FIREBASE_* in .env
+npm start
+```
+
+Default URLs:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:5000`
+- Health check: `http://localhost:5000/health`
+
+## Build and Deploy
+
+### Frontend production build
+
+```powershell
+cd frontend
 npm run build
 ```
 
-Serve the `frontend/build` folder with any static host (Netlify, Vercel, Nginx, etc.).
+Deploy the generated `frontend/build` folder to your static host.
 
-### Docker (backend)
+### Backend production run
+
+```powershell
+cd backend
+npm start
+```
+
+### Backend Docker (optional)
 
 ```bash
 docker build -t wevibe-backend ./backend
 docker run -p 5000:5000 --env-file backend/.env wevibe-backend
 ```
 
-## Auth Model
+## Folder Structure
 
-- **Login:** Firebase phone OTP (frontend)
-- **Protected routes:** `Authorization: Bearer <Firebase ID token>`
-- **Playlist create/delete:** require valid Firebase token
-- **Playlist list/add/remove:** public (no token) — existing behavior
+```text
+wevibe-app/
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   └── utils/
+├── frontend/
+│   ├── public/
+│   └── src/
+└── README.md
+```
 
-## Security Notes
+## Screenshots
 
-- Never commit `.env`, `firebase-adminsdk.json`, or API keys
-- Rotate any credentials that were ever exposed in git history
-- Firebase client API keys are public by design; restrict with Firebase App Check / domain rules in production
+Add screenshots here before final submission:
 
-## Scripts
+- Home/Search view
+- Playlist library view
+- Now playing / queue UI
+- Auth flow (phone OTP)
 
-| Location | Command | Purpose |
-|----------|---------|---------|
-| backend | `npm run dev` | Dev server with nodemon |
-| backend | `npm start` | Production server |
-| frontend | `npm start` | Dev React app |
-| frontend | `npm run build` | Production build |
+## Future Improvements
+
+- Add automated tests for backend routes and critical frontend flows
+- Add stricter role-based authorization checks for playlist updates
+- Improve import progress feedback for large Spotify playlists
+- Add CI checks (lint/test/build) on pull requests
+
+## AI Usage Note
+
+AI-assisted tooling was used during project cleanup/refactoring and documentation polishing. All generated changes were reviewed and aligned with existing app behavior.
+
+## Author
+
+- Neeraj
+- GitHub: [@Neeraj1217](https://github.com/Neeraj1217)

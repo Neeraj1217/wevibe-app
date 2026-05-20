@@ -1,5 +1,3 @@
-// App.js — Full drop-in (menu portal memoized + deletePlaylist fix + small hardening)
-// Replace your existing App.js with this file (matches your backend DELETE /api/playlists/:id)
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import axios from "axios";
