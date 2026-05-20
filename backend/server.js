@@ -1,9 +1,4 @@
-// =====================================================
-// 🎧 WeVibe Backend — FINAL UNTRIMMED VERSION (Bug-Free + Spotify→YouTube Synced)
-//  - Fixes undefined YouTube ID errors once and for all
-//  - Imports Spotify playlists with valid YouTube IDs (search + persist)
-//  - Keeps full visual structure identical
-// =====================================================
+// WeVibe backend API server.
 
 // 1️⃣ LOAD ENV FIRST — ESM SAFE (THIS IS CRITICAL)
 // 1️⃣ LOAD ENV FIRST (ESM SAFE)
