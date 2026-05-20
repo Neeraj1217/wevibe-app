@@ -1,21 +1,22 @@
 // backend/controllers/authController.js
-import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import validator from "validator";
-import User from "../models/user.js"; // adjust path if your model path differs
-import { sendSms } from "../utils/sms.js"; // small helper we create below
+import User from "../models/user.js";
+import { sendSms } from "../utils/sms.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev_jwt_secret";
+const isProd = process.env.NODE_ENV === "production";
+const JWT_SECRET = process.env.JWT_SECRET || (isProd ? "" : "dev_jwt_secret");
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 const OTP_TTL_MINUTES = parseInt(process.env.OTP_TTL_MINUTES || "5", 10);
 
 function signToken(userId) {
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is required in production");
+  }
   return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
 function setTokenCookie(res, token) {
-  const isProd = process.env.NODE_ENV === "production";
   res.cookie("token", token, {
     httpOnly: true,
     secure: isProd,
